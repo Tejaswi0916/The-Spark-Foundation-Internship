@@ -1,0 +1,66 @@
+---
+title: "Task2_Clustering"
+author: "EMMADISHETTI TEJASWI"
+date: "16/02/2021"
+output: html_document
+---
+# Prediction using Unsupervised Machine Learning
+# GRIP @ The Sparks Foundation
+# Objective: The task is to predict the optimum number of clusters and represent it visually from the given ‘Iris’ dataset, 
+
+```{r}
+#setting my working directory
+setwd("C:/Users/EMMADISHETTI TEJASWI/Desktop/tsf")
+#Importing Dataset
+iris<- read.csv("Iris.csv",header=TRUE)
+iris<-iris[2:6]
+```
+
+# Exploring the data
+```{r}
+str(iris)
+summary(iris)
+```
+
+# Data Preprocessing for Clustering
+```{r}
+iris.s<-iris
+iris.s$Species<-NULL
+```
+## A short note on Within Cluster Sum of Squares
+#It states that while clustering performance as measured by WCSS increases (i.e. WCSS decreases) with increase in k, rate of increase is usually decreasing.So performance improvement for increasing number of cluster from, say, 3 to 4 is higher than that for increasing from 4 to 5. Plotting WCSS against increasing k can show an ‘elbow’ which demarks significant drop in rate of increase. Selecting number of clusters corresponding to elbow point achieves reasonable performance without having too many clusters. This is still judgmental since what constitutes elbow is visually determined. Further, in practice, there may not be an elbow but smooth curve, or, there may be more than one elbow.Using the elbow method to find the optimal number of clusters
+```{r}
+set.seed(6)
+wcss<-vector()
+for (i in 1:10)
+{
+  wcss[i]<-sum(kmeans(iris.s,i)$withinss)
+}
+plot(1:10,wcss,type="b",xlab="Number of clusters",ylab="Within Cluster sum squares",main="optimal number of clusters")
+```
+
+# As we observe above through the elbow method we find that the optimum value of the elbow lies at x=3 and hence we choose our number of clusters to be 3.
+```{r}
+set.seed(56)
+result=kmeans(iris.s,3,iter.max=300,nstar=10)
+result
+```
+
+# Confusion matrix
+
+# compare the clusters with the species
+```{r}
+table(iris$Species,result$cluster)
+plot(table(iris$Species,result$cluster),main="Confusion matrix for clustering",xlab="Species",ylab="Cluster")
+```
+
+# Visualizing the clusters
+```{r}
+library(ggplot2)
+result$cluster=as.factor(result$cluster)
+center=data.frame(result$centers)
+ggplot(iris.s)+geom_point(aes(x=PetalLengthCm,y=PetalWidthCm,color=result$cluster))+geom_point(data=center,aes(x=PetalLengthCm,y=PetalWidthCm),shape=5,color="black",size=4)+labs(x="PetalLength(in cm)",y="PetalWidth(in cm)")+ggtitle("Visualizing clusters on PetalLength and PetalWidth")
+
+ggplot(iris.s)+geom_point(aes(x=SepalLengthCm,y=SepalWidthCm,color=result$cluster))+geom_point(data=center,aes(x=SepalLengthCm,y=SepalWidthCm),shape=5,color="black",size=4)+labs(x="SepalLength(in cm)",y="SepalWidth(in cm)")+ggtitle("Visualizing clusters on SepalLength and SepalWidth")
+
+```

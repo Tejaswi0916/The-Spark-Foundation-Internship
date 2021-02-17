@@ -1,0 +1,72 @@
+---
+title: "TASK1_LINEAR REGRESSION"
+author: "EMMADISHETTI TEJASWI"
+date: "16/02/2021"
+output: html_document
+---
+Task1-Prediction using Supervised Machine Learning
+
+GRIP @ The Sparks Foundation
+
+# Objective: The task is to predict the percentage score of a student based on the number of study hours of that particular student. 
+# This is a simple linear regression analysis task which involves only two variables.
+
+```{r}
+#setting my working directory
+setwd("C:/Users/EMMADISHETTI TEJASWI/Desktop/tsf")
+```
+
+# Importing Dataset
+```{r}
+student<- read.csv("Data.csv",header=TRUE)
+print("Data reading Successfully Done")
+dim(student)
+head(student)
+```
+# The given data consists of the Study Hours of a number of students with their respective Percentage Scores they have obtained in their exam. 
+# Using this data,we can predict whether studying for more hours results in good percentage score in the exam or not.
+```{r}
+student
+str(student)
+```
+
+# Plot the distribution of scores &  Train the linear regression model using lm function
+```{r}
+plot(x = student$Hours, y = student$Scores,xlab = "Hours Studied", ylab = "Percentage Score",
+     col="red",xlim=c(0,10),ylim=c(0,100),main = "Percentage Scored vs Hours Studied",sub="Data of 25 persons")
+
+student_model<-lm(Scores ~ Hours, data = student)
+# Checking Model Coefficents
+student_model
+# Put Regression line on graph
+abline(student_model, col="blue",lwd=2)
+```
+
+# Summary Of Model
+```{r}
+summary(student_model)
+```
+# R-2 gives the score of model fit and in this case we have R-2 = 0.95 which is actually a great score for this model.
+```{r}
+# Showing the model fitted value
+fitted(student_model)
+# Showing the extract model residuals
+residuals(student_model)
+```
+# Computing the predicted results
+```{r}
+study_hour<-data.frame(Hours = 9.25)
+predicted_score<-predict(student_model, study_hour)
+print(predicted_score)
+```
+# Predicted score for a student studying 9.25 hours is 92.90
+
+
+
+
+
+
+
+
+
+
